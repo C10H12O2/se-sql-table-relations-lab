@@ -93,7 +93,13 @@ df_total_customers = pd.read_sql("""
 
 # STEP 9
 # Replace None with your code
-df_customers = None
+df_customers = pd.read_sql("""
+    SEECT o.officeCode, o.city, COUNT(c.customerNumber) AS numCustomers
+    FROM offices o
+    JOIN employees e ON o.officeCode = e.officeCode
+    JOIN customers c ON e.employeeNumber = c.salesRepEmployeeNumber
+    GROUP BY o.officeCode
+    """, conn)
 
 # STEP 10
 # Replace None with your code
