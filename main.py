@@ -94,7 +94,7 @@ df_total_customers = pd.read_sql("""
 # STEP 9
 # Replace None with your code
 df_customers = pd.read_sql("""
-    SEECT o.officeCode, o.city, COUNT(c.customerNumber) AS numCustomers
+    SELECT o.officeCode, o.city, COUNT(c.customerNumber) AS numCustomers
     FROM offices o
     JOIN employees e ON o.officeCode = e.officeCode
     JOIN customers c ON e.employeeNumber = c.salesRepEmployeeNumber
@@ -103,6 +103,21 @@ df_customers = pd.read_sql("""
 
 # STEP 10
 # Replace None with your code
-df_under_20 = None
+df_under_20 = pd.read_sql("""
+    SELECT DISTINCT e.employeeNumber, e.firstName, e.lastName, o.city, o.officeCode
+    FROM employees e
+    JOIN offices o on e.officeCode = o.officeCode
+    JOIN customers c ON e.employeeNumber = c.salesRepEmployeeNumber
+    JOIN orers ord ON c.customerNumber = ord.customerNumber
+    JOIN orderDetails od ON ord.orderNumber = od.orderNumber
+    WHERE od.productCode IN(
+        SELECT productCode
+        FROM products
+        JOIN orderdetails od2 ON p.productCode = od2.productCode
+        JOIN orders o2 ON od2.orderNumber = od2.orderNumber
+        GROUP BY p.productCode
+        HAVING COUNT(DISTINCT o2.customerNumber) < 20
+    )
+    """, conn)
 
 conn.close()
