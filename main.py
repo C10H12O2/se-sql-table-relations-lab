@@ -70,7 +70,15 @@ df_credit = pd.read_sql("""
 
 # STEP 7
 # Replace None with your code
-df_product_sold = None
+df_product_sold = pd.reaad_sql("""
+    SELECT p.productName
+           COUNT(DISTINCT od.orderNumber) AS numorders,
+           SUM(od.quantityOrdered) AS totalunits
+    FROM products p
+    JOIN orderDetails od ON p.productCode = od.productCode
+    GROUP BY p.productCode
+    ORDER BY totalunits DESC
+    """, conn)
 
 # STEP 8
 # Replace None with your code
