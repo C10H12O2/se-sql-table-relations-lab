@@ -35,7 +35,7 @@ df_employee = pd.read_sql("""
     FROM employees e
     LEFT JOIN offices o ON e.officeCode = o.officeCode
     ORDER BY e.firstName, e.lastName
-    """, conn)
+""", conn)
 
 # STEP 4
 # Replace None with your code
@@ -51,73 +51,75 @@ df_contacts = pd.read_sql("""
 # Replace None with your code
 df_payment = pd.read_sql("""
     SELECT c.contactFirstName, c.contactLastName,
-    CAST(p.amount AS REAL) AS amount, p.paymentDate
+           CAST(p.amount AS REAL) AS amount, p.paymentDate
     FROM customers c
-    JOIN PAYMENTS p ON c.customerNumber = p.customerNumber
+    JOIN payments p ON c.customerNumber = p.customerNumber
     ORDER BY CAST(p.amount AS REAL) DESC
-    """, conn)
+""", conn)
 
 # STEP 6
 # Replace None with your code
 df_credit = pd.read_sql("""
-    SELECT e.employeeNumber, e.FirstName, e.LastName, COUNT(c.customerNumber) AS numCustomers
+    SELECT e.employeeNumber, e.firstName, e.lastName, COUNT(c.customerNumber) AS numCustomers
     FROM employees e
     JOIN customers c ON e.employeeNumber = c.salesRepEmployeeNumber
     GROUP BY e.employeeNumber
-    HAVING AVG(c.creditLimit) > 900000
+    HAVING AVG(c.creditLimit) > 90000
     ORDER BY numCustomers DESC
-    """, conn)
+""", conn)
 
 # STEP 7
 # Replace None with your code
-df_product_sold = pd.reaad_sql("""
-    SELECT p.productName
+df_product_sold = pd.read_sql("""
+    SELECT p.productName,
            COUNT(DISTINCT od.orderNumber) AS numorders,
            SUM(od.quantityOrdered) AS totalunits
     FROM products p
-    JOIN orderDetails od ON p.productCode = od.productCode
+    JOIN orderdetails od ON p.productCode = od.productCode
     GROUP BY p.productCode
     ORDER BY totalunits DESC
-    """, conn)
+""", conn)
 
 # STEP 8
 # Replace None with your code
 df_total_customers = pd.read_sql("""
-    SELECT p.productName,p.productCode,
-    COUNT(DISTINCT o.customerNumber) AS numpurchasers
+    SELECT p.productName, p.productCode,
+           COUNT(DISTINCT o.customerNumber) AS numpurchasers
     FROM products p
-    JOIN orderDetails od ON p.productCode = od.productCode
+    JOIN orderdetails od ON p.productCode = od.productCode
     JOIN orders o ON od.orderNumber = o.orderNumber
+    GROUP BY p.productCode
     ORDER BY numpurchasers DESC
-    """, conn)
+""", conn)
 
 # STEP 9
 # Replace None with your code
 df_customers = pd.read_sql("""
-    SELECT o.officeCode, o.city, COUNT(c.customerNumber) AS numCustomers
+    SELECT o.officeCode, o.city, COUNT(c.customerNumber) AS n_customers
     FROM offices o
     JOIN employees e ON o.officeCode = e.officeCode
     JOIN customers c ON e.employeeNumber = c.salesRepEmployeeNumber
     GROUP BY o.officeCode
-    """, conn)
+    ORDER BY n_customers DESC
+""", conn)
 
 # STEP 10
 # Replace None with your code
 df_under_20 = pd.read_sql("""
     SELECT DISTINCT e.employeeNumber, e.firstName, e.lastName, o.city, o.officeCode
     FROM employees e
-    JOIN offices o on e.officeCode = o.officeCode
+    JOIN offices o ON e.officeCode = o.officeCode
     JOIN customers c ON e.employeeNumber = c.salesRepEmployeeNumber
-    JOIN orers ord ON c.customerNumber = ord.customerNumber
-    JOIN orderDetails od ON ord.orderNumber = od.orderNumber
-    WHERE od.productCode IN(
-        SELECT productCode
-        FROM products
+    JOIN orders ord ON c.customerNumber = ord.customerNumber
+    JOIN orderdetails od ON ord.orderNumber = od.orderNumber
+    WHERE od.productCode IN (
+        SELECT p.productCode
+        FROM products p
         JOIN orderdetails od2 ON p.productCode = od2.productCode
-        JOIN orders o2 ON od2.orderNumber = od2.orderNumber
+        JOIN orders o2 ON od2.orderNumber = o2.orderNumber
         GROUP BY p.productCode
         HAVING COUNT(DISTINCT o2.customerNumber) < 20
     )
-    """, conn)
+""", conn)
 
 conn.close()
