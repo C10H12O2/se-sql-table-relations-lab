@@ -1,5 +1,6 @@
 # STEP 0
 
+
 # SQL Library and Pandas Library
 import sqlite3
 import pandas as pd
@@ -11,11 +12,21 @@ pd.read_sql("""SELECT * FROM sqlite_master""", conn)
 
 # STEP 1
 # Replace None with your code
-df_boston = None
+df_boston = pd.read_sql("""
+            SELECT e.firstName, e.lastName, e.jonTitle
+            FROM employees e
+            JOIN offices o ON e.officeCode = o.officeCode
+            WHERE o.city = 'Boston'
+            """, conn)
 
 # STEP 2
 # Replace None with your code
-df_zero_emp = None
+df_zero_emp = pd.read_sql("""
+    SELECT o.officeCode, o,city
+    FROM offices o
+    LEFT JOIN employees e ON o.officeCode = e.officeCode
+    WHERE e.employeeeNumber IS NULL
+    """, conn)
 
 # STEP 3
 # Replace None with your code
