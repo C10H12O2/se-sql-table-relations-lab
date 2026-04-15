@@ -22,11 +22,11 @@ df_boston = pd.read_sql("""
 # STEP 2
 # Replace None with your code
 df_zero_emp = pd.read_sql("""
-    SELECT o.officeCode, o,city
+    SELECT o.officeCode, o.city
     FROM offices o
     LEFT JOIN employees e ON o.officeCode = e.officeCode
-    WHERE e.employeeeNumber IS NULL
-    """, conn)
+    WHERE e.employeeNumber IS NULL
+""", conn)
 
 # STEP 3
 # Replace None with your code
