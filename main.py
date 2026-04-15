@@ -100,7 +100,7 @@ df_customers = pd.read_sql("""
     JOIN employees e ON o.officeCode = e.officeCode
     JOIN customers c ON e.employeeNumber = c.salesRepEmployeeNumber
     GROUP BY o.officeCode
-    ORDER BY n_customers DESC
+    ORDER BY o.officeCode
 """, conn)
 
 # STEP 10
@@ -124,3 +124,5 @@ df_under_20 = pd.read_sql("""
 """, conn)
 
 conn.close()
+
+print(df_customers)
